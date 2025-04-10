@@ -1,1 +1,1 @@
-# Modeling Somatic Evolution A Cellular Automata Approach Inspired by Conways Game of Life
+# Modeling Somatic Evolution: A Cellular Automata Approach Inspired by Conway's Game of Life
