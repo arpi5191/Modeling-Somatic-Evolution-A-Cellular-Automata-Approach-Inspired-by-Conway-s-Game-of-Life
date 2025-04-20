@@ -2,24 +2,27 @@ import csv
 
 def read_board_from_file(filename):
     """
-    Reads a Game of Life board from a CSV file and converts it into a 2D list of booleans.
+    Reads the board from the input filename.
     
     Parameters:
-    filename (str): The path to the CSV file containing the board data.
+    filename (str): The path to the file where the board is saved.
     
     Returns:
-    list: A 2D list representing the board, where True indicates a live cell and False indicates a dead cell.
+    list: A 2D array that contains a 1 if the cell is alive and a 0 if it is dead.
     """
-    board = []  # Initialize an empty list to store the board rows
+
+    # Create an empty list to hold the values in the board
+    board = [] 
     
-    # Open the CSV file for reading
+
+    # Open the file in read mode
     with open(filename, 'r') as f:
-        # Iterate over each line in the file
+        # Iterate through each line in the file
         for line in f:
-            # Split the line by commas, strip whitespace, and filter out empty values
+            # Split the row of the board into values using a comma as a delimiter
             row = [val.strip() for val in line.strip().split(',') if val.strip()]
-            
-            # Convert each value in the row to a boolean (True for '1', False for '0')
+            # Add a 1 for every value in the row
             board.append([val == "1" for val in row])
-    
-    return board  # Return the 2D list representing the board
+
+    # Return the board
+    return board  
