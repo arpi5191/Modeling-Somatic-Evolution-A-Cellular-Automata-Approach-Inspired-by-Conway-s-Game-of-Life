@@ -26,6 +26,9 @@ def play_game_of_life_with_mutation(initial_board, num_gens=10000, mutation_rate
     born = np.full((rows, cols), 3)
     crowded = np.full((rows, cols), 3)
 
+    # Initialize a list to store the population of live cells over the generations
+    population = []
+
     # Iterate through each generation
     for gen in range(num_gens):
 
@@ -95,11 +98,14 @@ def play_game_of_life_with_mutation(initial_board, num_gens=10000, mutation_rate
                                     new_born[i, j] = np.clip(new_born[i, j] + delta, 0, 8)
                                 elif threshold == 'crowded':
                                     new_crowded[i, j] = np.clip(new_crowded[i, j] + delta, 0, 8)
+
+        # Store the population of the live cells
+        population.append(np.sum(new_board))
         
         # Check if the board from the last generation is the same as this generation
         if np.array_equal(board, new_board):
-            # Return the generation if the steady state is reached
-            return gen + 1  
+            # Return the number of generations, population and board if the steady state is reached
+            return gen + 1, population, new_board 
 
         # Update the boards
         board = new_board
@@ -107,8 +113,8 @@ def play_game_of_life_with_mutation(initial_board, num_gens=10000, mutation_rate
         born = new_born
         crowded = new_crowded
     
-    # Return number of generations if steady state wasn't reached
-    return num_gens
+    # Return the number of generations, population and board if steady state wasn't reached
+    return num_gens, population, board
 
 def simulate_population_with_mutation(initial_board, num_gens=10000, mutation_rate=0.0, mutation_magnitude=0.0):
     """
