@@ -136,12 +136,13 @@ def play_game_of_life_with_mutation(initial_board, num_gens=10000, mutation_rate
 
         # Store the population of the live cells
         population.append(np.sum(new_board))
-
+            
         # Check if the new board is the same for 10 consecutive generations
         if np.array_equal(board, new_board):
             steady_state_count += 1
-            if steady_state_count == 10:
-                return [gen + 1, population, new_board, np.sum(new_board), np.mean(new_lonely), np.mean(new_born), np.mean(new_crowded)]
+            if steady_state_count == 5:
+                return [gen + 1, population, new_board, new_lonely, new_born, new_crowded, np.sum(new_board), np.mean(new_lonely),
+                        np.mean(new_born), np.mean(new_crowded)]
         else:
             steady_state_count = 0
 
@@ -152,4 +153,4 @@ def play_game_of_life_with_mutation(initial_board, num_gens=10000, mutation_rate
         crowded = new_crowded
     
     # Return the number of generations, population and board if steady state wasn't reached, and a list of the mutation threshold changes
-    return [num_gens, population, board, np.sum(board), np.mean(lonely), np.mean(born), np.mean(crowded)]
+    return [num_gens, population, board, lonely, born, crowded, np.sum(board), np.mean(lonely), np.mean(born), np.mean(crowded)]
