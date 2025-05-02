@@ -2,7 +2,7 @@ import numpy as np
 import random
 from base_functions import in_field
 
-def play_game_of_life_with_radiation(initial_board, num_gens=10000, mutation_rate=0.4, mutation_magnitude=1.5, rad_strength=0):
+def play_game_of_life_with_radiation(initial_board, num_gens=10000, mutation_rate=0.4, mutation_magnitude=1.5, rad_strength=0, gen_gap=4):
     """
     Simulates the Game of Life with threshold mutations
     Returning the number of generations until steady state is reached, the end population, the lonely, crowded, and born mutationas.
@@ -28,19 +28,26 @@ def play_game_of_life_with_radiation(initial_board, num_gens=10000, mutation_rat
 
     # Initialize the lonely, born, and crowded boards based on the number of rows and columns
     rows, cols = board.shape
-    damage = np.full((rows, cols), 0)
+    damage = np.full((rows, cols), rad_strength)
     lonely = np.full((rows, cols), 2.0)
     born = np.full((rows, cols), 2.0)
     crowded = np.full((rows, cols), 3.0)
 
     steady_state_count = 0
+    """
+    for i in range(1, rows - 1):
+        for j in range(1, cols - 1):
+            if board[i][j] == 0: 
+                print("set to -1")
+                born[i][j] = -1 
+    """
+
 
     # Initialize a list to store the population of live cells over the generations
     population = []
 
     # Iterate through each generation
     for gen in range(num_gens): 
-        gen = gen+1
         print(gen)
 
 
@@ -58,47 +65,21 @@ def play_game_of_life_with_radiation(initial_board, num_gens=10000, mutation_rat
             # Iterate through each inner column in the board
             for j in range(1, cols - 1):
                 
-
+                raddeath = False
                 # Obtain the neighborhood of the cell and find the number of live neighbors the cell has
                 neighborhood = board[i-1:i+2, j-1:j+2]
                 num_neighbors = np.sum(neighborhood) - board[i, j]
-                raddeath = False
 
                 # Round the values in the lonely, born, and crowded boards at position (i, j)
-                cell_lonely = int(round(lonely[i, j]))  
-                cell_born = int(round(born[i, j]))      
-                cell_crowded = int(round(crowded[i, j]))
 
-                # Check if the cell was alive in the last generation
-                if board[i, j] == 1:
-                    if gen % 4 == 0: 
-                        new_damage[i,j] = damage[i,j] + rad_strength
-                    improvement = (born[i, j]) / 20
-
-                    new_damage[i,j] = max(0,damage[i,j]-improvement)
-                    if (gen + 2) % 4 == 0: 
-                        if new_damage[i,j] > 0: 
-                            raddeath = True
-                    # Check if the cell dies in the current generation based on the conditions
-                    if num_neighbors < cell_lonely or num_neighbors > cell_crowded or raddeath:
-                        # Reset the threshold values if the cell dies
-                        new_board[i, j] = 0
-                        new_lonely[i, j] = 2.0
-                        new_born[i, j] = -1
-                        new_crowded[i, j] = 3.0
-                        new_damage[i,j] = 0 
-                    else:
-                        # Otherwise, keep the cell alive
-                        new_board[i, j] = 1
-                # Otherwise, check if the cell is dead
-                else:
+                if board[i, j] == 0:
                     live_neighbors = [(x, y) for x in range(i-1, i+2) for y in range(j-1, j+2)
                                           if (x != i or y != j) and board[x, y] == 1]
                     if live_neighbors:
                         parent_x, parent_y = random.choice(live_neighbors) 
                         cell_born = int(round(born[parent_x, parent_y]))
                     # Check if the cell becomes alive in the current generation
-                        if num_neighbors == cell_born:
+                        if num_neighbors <= cell_born:
                             # Set the board value to 1
                             new_board[i, j] = 1
                             # Check if there are live neighbors
@@ -123,18 +104,34 @@ def play_game_of_life_with_radiation(initial_board, num_gens=10000, mutation_rat
                                         new_born[i, j] = np.clip(new_born[i, j] + delta, 0, 8)
                                     elif threshold == 'crowded':
                                         new_crowded[i, j] = np.clip(new_crowded[i, j] + delta, 0, 8)
+                # Check if the cell is alive
+                cell_lonely = int(round(new_lonely[i, j]))  
+                cell_born = int(round(new_born[i, j]))      
+                cell_crowded = int(round(new_crowded[i, j]))
+                if new_board[i, j] == 1 or board[i,j] == 1:
+                    if gen % gen_gap == 0: 
+                        new_damage[i,j] = new_damage[i,j] + rad_strength
+
+                    improvement = (new_born[i, j]) / 20
+
+                    new_damage[i,j] = max(0,new_damage[i,j]-improvement)
+                    if ((gen + round(gen_gap/2) % gen_gap)) == 0: 
+                        if new_damage[i,j] > 0: 
+                            raddeath = True
+                    # Check if the cell dies in the current generation based on the conditions
+                    if num_neighbors < cell_lonely or num_neighbors > cell_crowded or raddeath:
+                        # Reset the threshold values if the cell dies
+                        new_board[i, j] = 0
+                        new_lonely[i, j] = 2.0
+                        new_crowded[i, j] = 3.0
+                        new_damage[i,j] = -1
+                # Otherwise, check if the cell is dead
 
         # Store the population of the live cells
         boards.append(new_board)
         population.append(np.sum(new_board))
 
         # Check if the new board is the same for 10 consecutive generations
-        if np.array_equal(board, new_board):
-            steady_state_count += 1
-            if steady_state_count == 10:
-                return [gen + 1, population, new_board, new_born, np.sum(new_board), np.mean(new_lonely), np.mean(new_born), np.mean(new_crowded), boards]
-        else:
-            steady_state_count = 0
 
         # Update the boards
         board = new_board

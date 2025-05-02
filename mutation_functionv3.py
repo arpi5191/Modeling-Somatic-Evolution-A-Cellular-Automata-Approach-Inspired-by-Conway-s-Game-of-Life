@@ -57,7 +57,7 @@ def play_game_of_life(initial_board, num_gens=10000, mutation_rate=0.0, mutation
     # Initialize the lonely, born, and crowded boards based on the number of rows and columns
     rows, cols = board.shape
     lonely = np.full((rows, cols), 2.0)
-    born = np.full((rows, cols), 2.0)
+    born = np.full((rows, cols), 3.0)
     crowded = np.full((rows, cols), 3.0)
 
     steady_state_count = 0
@@ -144,7 +144,7 @@ def play_game_of_life(initial_board, num_gens=10000, mutation_rate=0.0, mutation
         if np.array_equal(board, new_board):
             steady_state_count += 1
             if steady_state_count == 10:
-                return [gen + 1, population, new_board, new_born, np.sum(new_board), np.mean(new_lonely), np.mean(new_born), np.mean(new_crowded), boards]
+                return [gen + 1, population, new_board, new_born, new_crowded, np.sum(new_board), np.mean(new_lonely), np.mean(new_born), np.mean(new_crowded), boards]
         else:
             steady_state_count = 0
 
@@ -155,4 +155,4 @@ def play_game_of_life(initial_board, num_gens=10000, mutation_rate=0.0, mutation
         crowded = new_crowded
     
     # Return the number of generations, population and board if steady state wasn't reached, and a list of the mutation threshold changes
-    return [num_gens, population, board, born, np.sum(board), np.mean(lonely), np.mean(born), np.mean(crowded), boards]
+    return [num_gens, population, board, born, crowded, np.sum(board), np.mean(lonely), np.mean(born), np.mean(crowded), boards]
