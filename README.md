@@ -18,4 +18,11 @@ Our model runs with the following rules:
    - Run the simulation to generate graphs of the modified Game of Life rules showing the steady states, live-cell counts, population sizes, average loneliness threshold, average born threshold, and average crowded threshold.
    - Run the simulation to generate graphs of the born-again thresholds, including the effects of radiation.
 
-## Notes
+## Helper Files and Folders
+1. io.utils.py: Reads the initial board from the file.
+2. base_functions.py: Has all the standard functions from GOL which will be run from GoL.ipynb.
+3. mutation_functions.py versions: Contains modified GOL versions that will be run from GoL.ipynb.
+4. draw.py: Draws the final board for the simulation.
+5. boards folder: Stores initial board.
+6. output: Contains all the output graphs and images.
+7. output_gifs: Contains all the output gifs.
